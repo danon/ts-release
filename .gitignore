@@ -1,3 +1,7 @@
 # Project
 .idea/
 *.iml
+
+# Node
+yarn.lock
+node_modules/
