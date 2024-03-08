@@ -5,9 +5,7 @@ export function distribute(output: string, operations: Operation[]): void {
   if (!fs.existsSync(output)) {
     fs.mkdirSync(output);
   }
-  if (operations.length) {
-    operations[0](output);
-  }
+  operations.forEach(operation => operation(output));
 }
 
 type Operation = (filename: string) => void;
