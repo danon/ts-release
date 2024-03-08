@@ -27,3 +27,9 @@ export function clear(): Operation {
       .forEach(file => fs.rmSync(file, {recursive: true}));
   };
 }
+
+export function tag(version: string): Operation {
+  return (output: string): void => {
+    fs.writeFileSync(join(output, 'package.json'), JSON.stringify({version: version}));
+  };
+}
