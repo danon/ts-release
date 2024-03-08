@@ -32,10 +32,19 @@ suite('distribute()', () => {
       directory(tmp => {
         tmp.write('LICENSE', 'mit');
         distribute(tmp.join('package'), [add(tmp.join('LICENSE'))]);
-        assert.equal(
-          tmp.read('package/LICENSE'),
-          'mit',
-        );
+        assert.equal(tmp.read('package/LICENSE'), 'mit');
       }));
   });
+
+  test('all steps', () =>
+    directory(tmp => {
+      tmp.write('foo', '');
+      tmp.write('bar', '');
+      distribute(tmp.join('package'), [
+        add(tmp.join('foo')),
+        add(tmp.join('bar')),
+      ]);
+      assert(tmp.exists('package/foo'));
+      assert(tmp.exists('package/bar'));
+    }));
 });
