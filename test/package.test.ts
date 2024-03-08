@@ -1,7 +1,7 @@
 import {suite, test} from "mocha";
 import {strict as assert} from "node:assert";
 
-import {add, clear, distribute} from "../src/package.ts";
+import {add, clear, distribute, tag} from "../src/package.ts";
 import {directory} from "./fixture/tmp.ts";
 
 suite('distribute()', () => {
@@ -68,6 +68,22 @@ suite('distribute()', () => {
         dir.create('package/foo/bar');
         distribute(dir.join('package'), [clear()]);
         assert(!dir.exists('package/foo'));
+      }));
+  });
+
+  suite('tag() package.json', () => {
+    test('create package.json', () =>
+      directory(dir => {
+        distribute(dir.path, [tag('')]);
+        assert(dir.exists('package.json'));
+      }));
+
+    test('tag package.json', () =>
+      directory(dir => {
+        distribute(dir.path, [tag('1.0.0')]);
+        assert.deepEqual(
+          JSON.parse(dir.read('package.json')),
+          {version: '1.0.0'});
       }));
   });
 });
