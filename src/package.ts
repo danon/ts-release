@@ -25,11 +25,15 @@ export function clear(): Operation {
 }
 
 export function tag(version: string): Operation {
+  return packageJson({version});
+}
+
+export function packageJson(packageJson: object): Operation {
   return (output: string): void => {
-    const packageJson = join(output, 'package.json');
-    fs.writeFileSync(packageJson, JSON.stringify({
-      ...readJson(packageJson),
-      version,
+    const packageJsonPath = join(output, 'package.json');
+    fs.writeFileSync(packageJsonPath, JSON.stringify({
+      ...readJson(packageJsonPath),
+      ...packageJson,
     }));
   };
 }
@@ -43,12 +47,4 @@ function readJson(packageJson: string): object {
 
 function read(path: string): string {
   return fs.readFileSync(path).toString();
-}
-
-export function packageJson(packageJson: object): Operation {
-  return (output: string): void => {
-    fs.writeFileSync(
-      join(output, 'package.json'),
-      JSON.stringify(packageJson));
-  };
 }
