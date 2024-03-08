@@ -38,7 +38,13 @@ export function packageJson(packageJson: object): Operation {
   };
 }
 
-function readJson(packageJson: string): object {
+export function dependencies(original: string): Operation {
+  return packageJson({
+    dependencies: readJson(original).dependencies || {},
+  });
+}
+
+function readJson(packageJson: string): { [key: string]: string } {
   if (fs.existsSync(packageJson)) {
     return JSON.parse(read(packageJson));
   }
