@@ -49,4 +49,8 @@ class Directory {
   exists(filename: string): boolean {
     return fs.existsSync(this.join(filename));
   }
+
+  readJson(filename: string): object {
+    return JSON.parse(this.read(filename));
+  }
 }
