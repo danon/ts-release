@@ -1,7 +1,7 @@
 import {test} from "mocha";
 import {strict as assert} from "node:assert";
 
-import {add, distribute} from "../src/package.ts";
+import {add, clear, distribute} from "../src/package.ts";
 import {directory} from "./fixture/tmp.ts";
 
 suite('distribute()', () => {
@@ -47,4 +47,27 @@ suite('distribute()', () => {
       assert(dir.exists('package/foo'));
       assert(dir.exists('package/bar'));
     }));
+
+  suite('clear() output/', () => {
+    test('file', () =>
+      directory(dir => {
+        dir.write('package/file', '');
+        distribute(dir.join('package'), [clear()]);
+        assert(!dir.exists('package/file'));
+      }));
+
+    test('directory', () =>
+      directory(dir => {
+        dir.create('package/dir');
+        distribute(dir.join('package'), [clear()]);
+        assert(!dir.exists('package/dir'));
+      }));
+
+    test('nested directory', () =>
+      directory(dir => {
+        dir.create('package/foo/bar');
+        distribute(dir.join('package'), [clear()]);
+        assert(!dir.exists('package/foo'));
+      }));
+  });
 });
