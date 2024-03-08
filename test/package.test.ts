@@ -1,7 +1,7 @@
 import {test} from "mocha";
 import {strict as assert} from "node:assert";
 
-import {add, clear, distribute, packageJson, tag} from "../src/package.ts";
+import {add, clear, dependencies, distribute, packageJson, tag} from "../src/package.ts";
 import {directory} from "./fixture/tmp.ts";
 
 suite('distribute()', () => {
@@ -116,6 +116,26 @@ suite('distribute()', () => {
         assert.deepEqual(
           dir.readJson('package.json'),
           {name: 'winter', version: '1.0.0'});
+      }));
+  });
+
+  suite('dependencies() from package.json', () => {
+    test('missing key', () =>
+      directory(dir => {
+        dir.write('template.json', '{}');
+        distribute(dir.join('package'), [dependencies(dir.join('template.json'))]);
+        assert.deepEqual(
+          dir.readJson('package/package.json'),
+          {dependencies: {}});
+      }));
+
+    test('from original', () =>
+      directory(dir => {
+        dir.write('template.json', JSON.stringify({dependencies: {mocha: '*'}}));
+        distribute(dir.join('package'), [dependencies(dir.join('template.json'))]);
+        assert.deepEqual(
+          dir.readJson('package/package.json'),
+          {dependencies: {mocha: '*'}});
       }));
   });
 });
