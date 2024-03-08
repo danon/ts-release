@@ -137,6 +137,14 @@ suite('fixture/', () => {
           assert(dir.exists('foo'));
         }));
     });
+
+    test('.readJson()', () =>
+      directory(dir => {
+        dir.write('foo', '{"key":"value"}');
+        assert.deepEqual(
+          dir.readJson('foo'),
+          {key: "value"});
+      }));
   });
 
   function expectedTmp(): string {

@@ -1,7 +1,7 @@
 import {suite, test} from "mocha";
 import {strict as assert} from "node:assert";
 
-import {add, clear, distribute, tag} from "../src/package.ts";
+import {add, clear, distribute, packageJson, tag} from "../src/package.ts";
 import {directory} from "./fixture/directory.ts";
 
 suite('distribute()', () => {
@@ -71,6 +71,14 @@ suite('distribute()', () => {
       }));
   });
 
+  test('packageJson()', () =>
+    directory(dir => {
+      distribute(dir.path, [packageJson({name: 'winter'})]);
+      assert.deepEqual(
+        dir.readJson('package.json'),
+        {name: 'winter'});
+    }));
+
   suite('tag() package.json', () => {
     test('create package.json', () =>
       directory(dir => {
@@ -82,7 +90,7 @@ suite('distribute()', () => {
       directory(dir => {
         distribute(dir.path, [tag('1.0.0')]);
         assert.deepEqual(
-          JSON.parse(dir.read('package.json')),
+          dir.readJson('package.json'),
           {version: '1.0.0'});
       }));
   });

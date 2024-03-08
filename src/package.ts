@@ -29,7 +29,13 @@ export function clear(): Operation {
 }
 
 export function tag(version: string): Operation {
+  return packageJson({version: version});
+}
+
+export function packageJson(packageJson: object): Operation {
   return (output: string): void => {
-    fs.writeFileSync(join(output, 'package.json'), JSON.stringify({version: version}));
+    fs.writeFileSync(
+      join(output, 'package.json'),
+      JSON.stringify(packageJson));
   };
 }
