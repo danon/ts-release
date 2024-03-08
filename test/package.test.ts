@@ -71,13 +71,26 @@ suite('distribute()', () => {
       }));
   });
 
-  test('packageJson()', () =>
-    directory(dir => {
-      distribute(dir.path, [packageJson({name: 'winter'})]);
-      assert.deepEqual(
-        dir.readJson('package.json'),
-        {name: 'winter'});
-    }));
+  suite('packageJson()', () => {
+    test('create file', () =>
+      directory(dir => {
+        distribute(dir.path, [packageJson({name: 'winter'})]);
+        assert.deepEqual(
+          dir.readJson('package.json'),
+          {name: 'winter'});
+      }));
+
+    test('maintain package.json', () =>
+      directory(dir => {
+        distribute(dir.path, [
+          tag('1.0.0'),
+          packageJson({name: 'winter'}),
+        ]);
+        assert.deepEqual(
+          dir.readJson('package.json'),
+          {version: '1.0.0', name: 'winter'});
+      }));
+  });
 
   suite('tag() package.json', () => {
     test('create package.json', () =>
