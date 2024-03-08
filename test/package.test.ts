@@ -93,5 +93,16 @@ suite('distribute()', () => {
           dir.readJson('package.json'),
           {version: '1.0.0'});
       }));
+
+    test('maintain package.json', () =>
+      directory(dir => {
+        distribute(dir.path, [
+          packageJson({name: 'winter'}),
+          tag('1.0.0'),
+        ]);
+        assert.deepEqual(
+          dir.readJson('package.json'),
+          {name: 'winter', version: '1.0.0'});
+      }));
   });
 });
