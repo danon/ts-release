@@ -19,3 +19,11 @@ export function add(filename: string): Operation {
 function read(path: string): string {
   return fs.readFileSync(path).toString();
 }
+
+export function clear(): Operation {
+  return (output: string): void => {
+    fs.readdirSync(output)
+      .map(file => join(output, file))
+      .forEach(file => fs.rmSync(file, {recursive: true}));
+  };
+}
