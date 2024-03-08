@@ -16,10 +16,6 @@ export function add(filename: string): Operation {
   };
 }
 
-function read(path: string): string {
-  return fs.readFileSync(path).toString();
-}
-
 export function clear(): Operation {
   return (output: string): void => {
     fs.readdirSync(output)
@@ -29,7 +25,24 @@ export function clear(): Operation {
 }
 
 export function tag(version: string): Operation {
-  return packageJson({version: version});
+  return (output: string): void => {
+    const packageJson = join(output, 'package.json');
+    fs.writeFileSync(packageJson, JSON.stringify({
+      ...readJson(packageJson),
+      version,
+    }));
+  };
+}
+
+function readJson(packageJson: string): object {
+  if (fs.existsSync(packageJson)) {
+    return JSON.parse(read(packageJson));
+  }
+  return {};
+}
+
+function read(path: string): string {
+  return fs.readFileSync(path).toString();
 }
 
 export function packageJson(packageJson: object): Operation {
