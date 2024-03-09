@@ -22,6 +22,10 @@ export function assertOutputFilename(input: string, expected: string): Test {
   });
 }
 
+export function assertTranspileIgnore(sourceCode: string): Test {
+  return assertTranspileTarget('esm', sourceCode, sourceCode);
+}
+
 export function assertTranspile(sourceCode: string, expected: string): Test {
   return assertTranspileTarget('esm', sourceCode, expected);
 }

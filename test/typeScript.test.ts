@@ -3,7 +3,7 @@ import {strict as assert} from "node:assert";
 
 import {distribute} from "../src/package.ts";
 import {typeScript} from "../src/typeScript.ts";
-import {assertOutputFilename, assertTranspile, assertTranspileTarget} from "./fixture/assert.ts";
+import {assertOutputFilename, assertTranspile, assertTranspileIgnore, assertTranspileTarget} from "./fixture/assert.ts";
 import {directory} from "./fixture/directory.ts";
 
 suite('distribute()', () => {
@@ -45,6 +45,12 @@ require("node:fs");`));
 
       test('not extension',
         assertTranspile('import "ats";', 'import "ats";'));
+
+      test('export from',
+        assertTranspile('export * from "./file.ts";', 'export * from "./file.js";'));
+
+      test('export',
+        assertTranspileIgnore('export { value };'));
     });
   });
 });
