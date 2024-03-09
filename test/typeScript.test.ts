@@ -47,6 +47,13 @@ require("node:fs");`));
 
       test('not extension',
         assertTranspile('import "ats";', 'import "ats";'));
+
+      test('require()',
+        assertTranspileTarget('cjs',
+          'import "./file.ts";',
+          `"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("./file.js");`));
     });
   });
 });
