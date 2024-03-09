@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import {dirname, join} from "node:path";
-import {transpile} from "typescript";
+import {ModuleKind, transpile} from "typescript";
 
 import {find} from "./find.ts";
 import {type Operation, packageJson, read} from "./package.ts";
@@ -11,9 +11,13 @@ export function typeScript(root: string, main: string): Operation {
       writeFile(
         join(output, 'dist', 'cjs', js(file)),
         transpile(read(join(root, file))));
+      writeFile(
+        join(output, 'dist', 'esm', js(file)),
+        transpile(read(join(root, file)), {module: ModuleKind.ES2015}));
     });
     packageJson({
       main: "./dist/cjs/" + js(main),
+      module: "./dist/esm/" + js(main),
     })(output);
   };
 }
