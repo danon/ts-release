@@ -18,7 +18,7 @@ function callTemporaryDirectory(root: string, callback: (directory: Directory) =
   }
 }
 
-class Directory {
+export class Directory {
   public path: string;
 
   public constructor(path: string) {
@@ -52,5 +52,9 @@ class Directory {
 
   readJson(filename: string): object {
     return JSON.parse(this.read(filename));
+  }
+
+  children(filename: string): string[] {
+    return fs.readdirSync(this.join(filename));
   }
 }

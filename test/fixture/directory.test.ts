@@ -145,6 +145,14 @@ suite('fixture/', () => {
           dir.readJson('foo'),
           {key: "value"});
       }));
+
+    test('.children()', () =>
+      directory(dir => {
+        dir.write('input/foo', '');
+        dir.write('input/bar', '');
+        dir.write('cat', '');
+        assert.deepEqual(dir.children('input'), ['bar', 'foo']);
+      }));
   });
 
   function expectedTmp(): string {
