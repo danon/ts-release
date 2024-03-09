@@ -1,0 +1,28 @@
+name: Release version
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Package ${{github.ref_name}}
+        run: yarn ts-node ./release/cli.ts ${{github.ref_name}} ./release/package/
+
+      - name: Publish ${{github.ref_name}}
+        run: npm publish --access public
+        working-directory: ./release/package/
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_SECRET }}
