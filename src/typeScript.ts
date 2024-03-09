@@ -24,7 +24,7 @@ export function typeScript(entryFile: string): Operation {
 function transpile(sourceCode: string, compilerOptions: CompilerOptions): string {
   const output: TranspileOutput = transpileModule(sourceCode, {
     compilerOptions,
-    transformers: {after: [updateImport]},
+    transformers: {before: [updateImport]},
   });
   return output.outputText;
 }
