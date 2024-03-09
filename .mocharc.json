@@ -1,7 +1,8 @@
 {
   "extension": "ts",
   "require": [
-    "ts-node/register"
+    "ts-node/register",
+    "@riddled/mocha-rebase-suite"
   ],
   "spec": [
     "test/",

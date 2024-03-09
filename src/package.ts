@@ -8,7 +8,7 @@ export function distribute(output: string, operations: Operation[]): void {
   operations.forEach(operation => operation(output));
 }
 
-type Operation = (filename: string) => void;
+export type Operation = (filename: string) => void;
 
 export function add(filename: string): Operation {
   return (output: string): void => {
@@ -51,6 +51,6 @@ function readJson(packageJson: string): { [key: string]: string } {
   return {};
 }
 
-function read(path: string): string {
+export function read(path: string): string {
   return fs.readFileSync(path).toString();
 }
