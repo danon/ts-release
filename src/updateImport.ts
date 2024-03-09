@@ -1,5 +1,7 @@
 import {
+  type ExportDeclaration,
   type ImportDeclaration,
+  isExportDeclaration,
   isImportDeclaration,
   type Node,
   type SourceFile,
@@ -20,6 +22,11 @@ export function updateImport(context: TransformationContext): Transformer<Source
     if (isImportDeclaration(child)) {
       return updatedImportDeclaration(child);
     }
+    if (isExportDeclaration(child)) {
+      if (child.moduleSpecifier) {
+        return updatedExportDeclaration(child);
+      }
+    }
     return child;
   }
 
@@ -31,6 +38,18 @@ export function updateImport(context: TransformationContext): Transformer<Source
       decl.importClause,
       context.factory.createStringLiteral(jsExtension(specifier.text)),
       decl.attributes);
+  }
+
+  function updatedExportDeclaration(decl: ExportDeclaration): ExportDeclaration {
+    const specifier = decl.moduleSpecifier as StringLiteral;
+    return context.factory.updateExportDeclaration(
+      decl,
+      decl.modifiers,
+      decl.isTypeOnly,
+      decl.exportClause,
+      context.factory.createStringLiteral(jsExtension(specifier.text)),
+      decl.attributes,
+    );
   }
 
   function jsExtension(scriptName: string): string {
