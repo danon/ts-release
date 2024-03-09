@@ -121,20 +121,20 @@ suite('distribute()', () => {
 
   suite('dependencies() from package.json', () => {
     test('missing key', () =>
-      directory(dir => {
-        dir.write('template.json', '{}');
-        distribute(dir.join('package'), [dependencies(dir.join('template.json'))]);
+      directory(tmp => {
+        tmp.write('template.json', '{}');
+        distribute(tmp.join('package'), [dependencies(tmp.join('template.json'))]);
         assert.deepEqual(
-          dir.readJson('package/package.json'),
+          tmp.readJson('package/package.json'),
           {dependencies: {}});
       }));
 
     test('from original', () =>
-      directory(dir => {
-        dir.write('template.json', JSON.stringify({dependencies: {mocha: '*'}}));
-        distribute(dir.join('package'), [dependencies(dir.join('template.json'))]);
+      directory(tmp => {
+        tmp.write('template.json', JSON.stringify({dependencies: {mocha: '*'}}));
+        distribute(tmp.join('package'), [dependencies(tmp.join('template.json'))]);
         assert.deepEqual(
-          dir.readJson('package/package.json'),
+          tmp.readJson('package/package.json'),
           {dependencies: {mocha: '*'}});
       }));
   });

@@ -1,10 +1,13 @@
 {
   "private": true,
+  "dependencies": {
+    "typescript": "^5.4.2"
+  },
   "devDependencies": {
+    "@riddled/mocha-rebase-suite": "^0.0.9",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.11.25",
     "mocha": "^10.3.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.2"
+    "ts-node": "^10.9.2"
   }
 }
