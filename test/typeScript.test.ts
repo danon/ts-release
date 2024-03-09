@@ -3,6 +3,7 @@ import {strict as assert} from "node:assert";
 
 import {distribute} from "../src/package.ts";
 import {typeScript} from "../src/typeScript.ts";
+import {assertOutputFilename} from "./fixture/assert.ts";
 import {directory} from "./fixture/directory.ts";
 
 suite('distribute()', () => {
@@ -17,6 +18,21 @@ suite('distribute()', () => {
         assert.deepEqual(dir.read('package/dist/cjs/foo.js'), `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 require("node:fs");\n`);
+      }));
+
+    test('.ts.ts',
+      assertOutputFilename('foo.ts.ts', 'foo.ts.js'));
+
+    test('ats',
+      assertOutputFilename('ats', 'ats'));
+
+    test('set package.json {main}', () =>
+      directory(dir => {
+        dir.write('input/foo.ts', '');
+        distribute(dir.path, [
+          typeScript(dir.join('input/foo.ts')),
+        ]);
+        assert.deepEqual(dir.readJson('package.json'), {main: './dist/cjs/foo.js'});
       }));
   });
 });
