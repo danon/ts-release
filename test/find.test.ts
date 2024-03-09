@@ -2,7 +2,7 @@ import {suite, test} from "mocha";
 import assert from "node:assert";
 import process from "node:process";
 
-import {find} from "../src/find.ts";
+import {find} from "../src/distribute/find.ts";
 import {directory} from "./fixture/directory.ts";
 
 suite('distribute()', () => {

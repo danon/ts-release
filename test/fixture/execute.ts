@@ -1,7 +1,6 @@
 import {spawnSync} from "node:child_process";
 
-import {distribute, packageJson} from "../../src/package.ts";
-import {typeScript} from "../../src/typeScript.ts";
+import {distribute, packageJson, typeScript} from "../../src/index.ts";
 import {Directory, directory} from "./directory.ts";
 
 export function executeTypeScript(target: 'cjs'|'esm', sourceCode: string): string {
