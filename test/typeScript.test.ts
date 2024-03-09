@@ -9,12 +9,12 @@ suite('distribute()', () => {
   suite('typeScript()', () => {
     suite('target', () => {
       test('transpile to .cjs',
-        assertTranspile('import "node:fs";', 'cjs', `"use strict";
+        assertTranspileTarget('cjs', 'import "node:fs";', `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-require("node:fs");\n`));
+require("node:fs");`));
 
       test('transpile to esm',
-        assertTranspile('import "node:fs";', 'esm', 'import "node:fs";\n'));
+        assertTranspileTarget('esm', 'import "node:fs";', 'import "node:fs";'));
     });
 
     test('.ts.ts',
@@ -34,23 +34,53 @@ require("node:fs");\n`));
           module: './dist/esm/nest/foo.js',
         });
       }));
+
+    suite('extension', () => {
+      test('.ts to .js',
+        assertTranspile('import "./file.ts";', 'import "./file.js";'));
+
+      test('export',
+        assertTranspileIgnore('export * from "./file.ts";'));
+
+      test('trailing .ts',
+        assertTranspile('import "./file.ts.ts";', 'import "./file.ts.js";'));
+
+      test('not extension',
+        assertTranspile('import "ats";', 'import "ats";'));
+    });
   });
 });
 
 type Test = () => void;
 
-function assertTranspile(input: string, type: string, expected: string): Test {
+function assertTranspileIgnore(input: string): Test {
+  return assertTranspileTarget('esm', input, input);
+}
+
+function assertTranspile(input: string, expected: string): Test {
+  return assertTranspileTarget('esm', input, expected);
+}
+
+function assertTranspileTarget(target: string, sourceCode: string, expected: string): Test {
   return () => directory(dir => {
-    dir.write('input/input.ts', input);
+    // given
+    dir.write('input/input.ts', sourceCode);
+    // when
     distribute(dir.join('output'), [typeScript(dir.join('input'), '')]);
-    assert.deepEqual(dir.read(`output/dist/${type}/input.js`), expected);
+    // then
+    assert.deepEqual(
+      dir.read(`output/dist/${target}/input.js`),
+      expected + "\n");
   });
 }
 
 function assertOutputFilename(input: string, expected: string): Test {
   return () => directory(dir => {
+    // given
     dir.write('input/' + input, '');
+    // when
     distribute(dir.join('package'), [typeScript(dir.join('input'), '')]);
+    // then
     assert(dir.exists('package/dist/cjs/' + expected));
   });
 }
