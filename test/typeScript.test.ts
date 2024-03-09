@@ -7,17 +7,15 @@ import {directory} from "./fixture/tmp.ts";
 
 suite('distribute()', () => {
   suite('typeScript()', () => {
-    test('transpile to .cjs', () =>
-      directory(dir => {
-        // given
-        dir.write('input/nest/foo.ts', 'import "node:fs";');
-        // when
-        distribute(dir.join('package'), [typeScript(dir.join('input'), '')]);
-        // then
-        assert.deepEqual(dir.read('package/dist/cjs/nest/foo.js'), `"use strict";
+    suite('target', () => {
+      test('transpile to .cjs',
+        assertTranspile('import "node:fs";', 'cjs', `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-require("node:fs");\n`);
-      }));
+require("node:fs");\n`));
+
+      test('transpile to esm',
+        assertTranspile('import "node:fs";', 'esm', 'import "node:fs";\n'));
+    });
 
     test('.ts.ts',
       assertOutputFilename('foo.ts.ts', 'foo.ts.js'));
@@ -25,18 +23,29 @@ require("node:fs");\n`);
     test('ats',
       assertOutputFilename('ats', 'ats'));
 
-    test('set package.json {main}', () =>
+    test('set package.json {main, module}', () =>
       directory(dir => {
         dir.write('input/nest/foo.ts', '');
         distribute(dir.path, [
           typeScript(dir.join('input'), 'nest/foo.ts'),
         ]);
-        assert.deepEqual(dir.readJson('package.json'), {main: './dist/cjs/nest/foo.js'});
+        assert.deepEqual(dir.readJson('package.json'), {
+          main: './dist/cjs/nest/foo.js',
+          module: './dist/esm/nest/foo.js',
+        });
       }));
   });
 });
 
 type Test = () => void;
+
+function assertTranspile(input: string, type: string, expected: string): Test {
+  return () => directory(dir => {
+    dir.write('input/input.ts', input);
+    distribute(dir.join('output'), [typeScript(dir.join('input'), '')]);
+    assert.deepEqual(dir.read(`output/dist/${type}/input.js`), expected);
+  });
+}
 
 function assertOutputFilename(input: string, expected: string): Test {
   return () => directory(dir => {
