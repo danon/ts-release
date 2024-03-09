@@ -3,22 +3,20 @@ import {strict as assert} from "node:assert";
 
 import {distribute} from "../src/package.ts";
 import {typeScript} from "../src/typeScript.ts";
-import {assertOutputFilename} from "./fixture/assert.ts";
+import {assertOutputFilename, assertTranspile} from "./fixture/assert.ts";
 import {directory} from "./fixture/directory.ts";
 
 suite('distribute()', () => {
   suite('typeScript()', () => {
-    test('transpile to commonJs', () =>
-      directory(dir => {
-        // given
-        dir.write('input/foo.ts', 'import "node:fs";');
-        // when
-        distribute(dir.join('package'), [typeScript(dir.join('input/foo.ts'))]);
-        // then
-        assert.deepEqual(dir.read('package/dist/cjs/foo.js'), `"use strict";
+    suite('target', () => {
+      test('transpile to commonJs',
+        assertTranspile('cjs', 'import "node:fs";', `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-require("node:fs");\n`);
-      }));
+require("node:fs");`));
+
+      test('transpile to esModule',
+        assertTranspile('esm', 'import "node:fs";', 'import "node:fs";'));
+    });
 
     test('.ts.ts',
       assertOutputFilename('foo.ts.ts', 'foo.ts.js'));
@@ -26,13 +24,16 @@ require("node:fs");\n`);
     test('ats',
       assertOutputFilename('ats', 'ats'));
 
-    test('set package.json {main}', () =>
+    test('set package.json {main, module}', () =>
       directory(dir => {
         dir.write('input/foo.ts', '');
         distribute(dir.path, [
           typeScript(dir.join('input/foo.ts')),
         ]);
-        assert.deepEqual(dir.readJson('package.json'), {main: './dist/cjs/foo.js'});
+        assert.deepEqual(dir.readJson('package.json'), {
+          main: './dist/cjs/foo.js',
+          module: './dist/esm/foo.js',
+        });
       }));
   });
 });

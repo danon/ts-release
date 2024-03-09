@@ -22,6 +22,27 @@ export function assertOutputFilename(input: string, expected: string): Test {
   });
 }
 
+export function assertTranspile(target: 'cjs'|'esm', sourceCode: string, expected: string): Test {
+  return assertTranspileNewline(target, sourceCode, expected + '\n');
+}
+
+function assertTranspileNewline(target: 'cjs'|'esm', sourceCode: string, expected: string): Test {
+  return test(dir => {
+    dir.write('input.ts', sourceCode);
+    distribute(dir.join('output'), [typeScript(dir.join('input.ts'))]);
+    assertIdentical(
+      dir.read(`output/dist/${target}/input.js`),
+      expected,
+      'Failed to assert that source code was transpiled exactly.');
+  });
+}
+
+function assertIdentical(actual: string, expected: string, message: string): void {
+  if (actual !== expected) {
+    throw new AssertionError({message, actual, expected});
+  }
+}
+
 function test(test: (directory: Directory) => void): Test {
   return () => directory(test);
 }
