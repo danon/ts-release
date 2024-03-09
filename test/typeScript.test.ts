@@ -1,8 +1,7 @@
 import {suite, test} from "mocha";
 import {strict as assert} from "node:assert";
 
-import {distribute} from "../src/package.ts";
-import {typeScript} from "../src/typeScript.ts";
+import {distribute, typeScript} from "../src/index.ts";
 import {assertOutputFilename, assertTranspile, assertTranspileIgnore, assertTranspileTarget} from "./fixture/assert.ts";
 import {directory} from "./fixture/directory.ts";
 
