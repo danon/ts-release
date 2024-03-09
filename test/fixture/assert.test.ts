@@ -1,7 +1,7 @@
 import {suite, test} from "mocha";
 import assert, {AssertionError} from "node:assert";
 
-import {assertOutputFilename, type Test} from "./assert.ts";
+import {assertOutputFilename, assertTranspile, type Test} from "./assert.ts";
 
 suite('fixture/', () => {
   suite('assert/', () => {
@@ -14,6 +14,18 @@ suite('fixture/', () => {
         'Failed to assert that file "foo" is renamed to "bar".',
         'bar',
         ['foo']));
+    });
+
+    suite('assertTranspile()', () => {
+      test('pass', passes(
+        assertTranspile('esm', '2;', '2;')));
+
+      test('fail', fails(
+        assertTranspile('esm', '"foo";', '"bar";'),
+        'Failed to assert that source code was transpiled exactly.',
+        '"bar";\n',
+        '"foo";\n',
+      ));
     });
   });
 });
@@ -28,7 +40,7 @@ function passes(block: () => void): Test {
   };
 }
 
-function fails(block: () => void, message: string, expected: string, actual: string[]): Test {
+function fails(block: () => void, message: string, expected: string, actual: any): Test {
   return () => {
     try {
       block();
