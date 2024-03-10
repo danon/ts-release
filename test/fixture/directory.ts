@@ -54,6 +54,10 @@ export class Directory {
     return JSON.parse(this.read(filename));
   }
 
+  readJsonField(filename: string, key: string): string {
+    return JSON.parse(this.read(filename))[key];
+  }
+
   children(filename: string): string[] {
     return fs.readdirSync(this.join(filename));
   }
