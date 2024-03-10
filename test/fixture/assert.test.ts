@@ -1,7 +1,7 @@
 import {suite, test} from "mocha";
 import assert, {AssertionError} from "node:assert";
 
-import {assertOutputFilename, assertTranspile, type Test} from "./assert.ts";
+import {assertOutputFilename, assertTranspile, assertTranspileTarget, type Test} from "./assert.ts";
 
 suite('fixture/', () => {
   suite('assert/', () => {
@@ -16,12 +16,24 @@ suite('fixture/', () => {
         ['foo.js']));
     });
 
-    suite('assertTranspile()', () => {
+    suite('assertTranspileTarget()', () => {
       test('pass', passes(
-        assertTranspile('esm', '2;', '2;')));
+        assertTranspileTarget('esm', '2;', '2;')));
 
       test('fail', fails(
-        assertTranspile('esm', '"foo";', '"bar";'),
+        assertTranspileTarget('esm', '"foo";', '"bar";'),
+        'Failed to assert that source code was transpiled exactly.',
+        '"bar";\n',
+        '"foo";\n',
+      ));
+    });
+
+    suite('assertTranspile()', () => {
+      test('pass', passes(
+        assertTranspile('2;', '2;')));
+
+      test('fail', fails(
+        assertTranspile('"foo";', '"bar";'),
         'Failed to assert that source code was transpiled exactly.',
         '"bar";\n',
         '"foo";\n',
