@@ -12,7 +12,7 @@ export function typeScript(entryFile: string): Operation {
 }
 
 function buildTypeScript(entryFile: string, output: string): void {
-  transpileTypeScript(entryFile, output, 'cjs', {});
+  transpileTypeScript(entryFile, output, 'cjs', {esModuleInterop: true});
   transpileTypeScript(entryFile, output, 'esm', {module: ModuleKind.ES2015});
 }
 
