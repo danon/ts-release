@@ -95,5 +95,29 @@ exports.val = 5;
         });
       }
     });
+
+    suite('package.json', () => {
+      test('set {main}', () =>
+        assertPackageJsonField('dog.ts', 'main', './dist/cjs/dog.js'));
+
+      test('set {module}', () =>
+        assertPackageJsonField('cat.ts', 'module', './dist/esm/cat.js'));
+
+      test('set {types}', () =>
+        assertPackageJsonField('fish.ts', 'types', './dist/types/fish.d.ts'));
+
+      test('trailing .ts', () =>
+        assertPackageJsonField('fish.ts.ts', 'main', './dist/cjs/fish.ts.js'));
+
+      test('not an extension', () =>
+        assertPackageJsonField('ats', 'main', './dist/cjs/ats'));
+
+      function assertPackageJsonField(filename: string, key: string, expected: string): void {
+        directory(tmp => {
+          distScript(tmp, filename, '');
+          assert.equal(tmp.readJsonField('package.json', key), expected);
+        });
+      }
+    });
   });
 });
