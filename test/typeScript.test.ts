@@ -21,6 +21,9 @@ require("node:fs");`));
 
       test('not an extension',
         assertTranspile('import "ats";', 'import "ats";'));
+
+      test('export * from',
+        assertTranspile('export * from "./file.ts";', 'export * from "./file.js";'));
     });
   });
 });
