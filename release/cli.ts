@@ -19,6 +19,6 @@ function release(version: string, output: string): void {
       license: 'MIT',
     }),
     dependencies('./package.json'),
-    typeScript('src/', 'index.ts'),
+    typeScript('./src/index.ts'),
   ]);
 }

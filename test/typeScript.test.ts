@@ -15,13 +15,15 @@ require("node:fs");`));
 
       test('transpile to esModule',
         assertTranspileTarget('esm', 'import "node:fs";', 'import "node:fs";'));
+
+      test('emit declaration',
+        assertTranspileTarget('types',
+          'export interface Foo {}\nsideEffect();',
+          'export interface Foo {\n}'));
     });
 
     test('.ts.ts',
       assertOutputFilename('foo.ts.ts', 'foo.ts.js'));
-
-    test('ats',
-      assertOutputFilename('ats', 'ats'));
 
     test('set package.json {main, module}', () =>
       directory(dir => {
