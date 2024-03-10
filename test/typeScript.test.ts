@@ -24,6 +24,9 @@ require("node:fs");`));
 
       test('export * from',
         assertTranspile('export * from "./file.ts";', 'export * from "./file.js";'));
+
+      test('export {}',
+        assertTranspile('export { value };', 'export { value };'));
     });
   });
 });
