@@ -1,15 +1,23 @@
 import fs from "node:fs";
 import {basename, dirname, join} from "node:path";
-import {transpile} from "typescript";
+import {type CompilerOptions, ModuleKind, transpile} from "typescript";
 
 import {type Operation, read} from "./package.ts";
 
 export function typeScript(entryFile: string): Operation {
   return (output: string): void => {
-    writeFile(
-      join(output, 'dist', 'cjs', js(basename(entryFile))),
-      transpile(read(entryFile)));
+    buildTypeScript(entryFile, output);
   };
+}
+
+function buildTypeScript(entryFile: string, output: string): void {
+  transpileTypeScript(entryFile, output, 'cjs', {});
+  transpileTypeScript(entryFile, output, 'esm', {module: ModuleKind.ES2015});
+}
+
+function transpileTypeScript(entryFile: string, output: string, target: string, options: CompilerOptions): void {
+  const path: string = join(output, 'dist', target, js(basename(entryFile)));
+  writeFile(path, transpile(read(entryFile), options));
 }
 
 function js(file: string): string {
