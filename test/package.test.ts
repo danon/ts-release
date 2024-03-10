@@ -1,7 +1,7 @@
 import {suite, test} from "mocha";
 import {strict as assert} from "node:assert";
 
-import {add, clear, dependencies, distribute, packageJson, tag} from "../src/package.ts";
+import {add, clear, dependencies, distribute, packageJson, tag} from "../src/index.ts";
 import {directory} from "./fixture/directory.ts";
 
 suite('distribute()', () => {

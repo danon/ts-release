@@ -1,7 +1,6 @@
 import {AssertionError} from "node:assert";
 
-import {distribute} from "../../src/package.ts";
-import {typeScript} from "../../src/typeScript.ts";
+import {distribute, typeScript} from "../../src/index.ts";
 import {Directory, directory} from "./directory.ts";
 
 export type Test = () => void;
