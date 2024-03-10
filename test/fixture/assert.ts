@@ -25,16 +25,16 @@ export function assertTranspile(sourceCode: string, expected: string): Test {
   return assertTranspileTarget('esm', sourceCode, expected);
 }
 
-export function assertTranspileTarget(target: 'cjs'|'esm', sourceCode: string, expected: string): Test {
+export function assertTranspileTarget(target: 'cjs'|'esm'|'types', sourceCode: string, expected: string): Test {
   return assertTranspileNewline(target, sourceCode, expected + '\n');
 }
 
-function assertTranspileNewline(target: 'cjs'|'esm', sourceCode: string, expected: string): Test {
+function assertTranspileNewline(target: 'cjs'|'esm'|'types', sourceCode: string, expected: string): Test {
   return test(tmp => {
     tmp.write('input.ts', sourceCode);
     distribute(tmp.join('output'), [typeScript(tmp.join('input.ts'))]);
     assertIdentical(
-      tmp.read(`output/dist/${target}/input.js`),
+      tmp.read(`output/dist/${target}/input.` + (target === 'types' ? 'd.ts' : 'js')),
       expected,
       'Failed to assert that source code was transpiled exactly.');
   });
