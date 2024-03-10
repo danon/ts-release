@@ -21,6 +21,12 @@ require("node:fs");`));
         'export interface Foo {}\nsideEffect();',
         'export interface Foo {\n}'));
 
+    test('declaration without source', () =>
+      directory(tmp => {
+        distScript(tmp, 'source.ts', '');
+        assert(!tmp.exists('dist/types/source.js'));
+      }));
+
     suite('import ".ts" to ".js"', () => {
       test('update extension',
         assertTranspile('import "./file.ts";', 'import "./file.js";'));
@@ -80,12 +86,12 @@ exports.val = 5;
 
       function assertImportedFile(target: 'cjs'|'esm', sourceCode: string, alsoIncluded: string): void {
         directory(tmp => {
-          tmp.write('other.ts', sourceCode);
-          distScript(tmp, 'file.ts', `
-            import {val} from "./other.ts";
+          tmp.write('imported.ts', sourceCode);
+          distScript(tmp, 'main.ts', `
+            import {val} from "./imported.ts";
             console.log(val);
           `);
-          assert.equal(tmp.read(`dist/${target}/other.js`), alsoIncluded);
+          assert.equal(tmp.read(`dist/${target}/imported.js`), alsoIncluded);
         });
       }
     });
