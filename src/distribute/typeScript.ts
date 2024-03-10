@@ -37,7 +37,7 @@ function createDirectory(output: string): void {
 function transpile(sourceCode: string, options: CompilerOptions): string {
   const output: TranspileOutput = transpileModule(sourceCode, {
     compilerOptions: options,
-    transformers: {after: [updateImport]},
+    transformers: {before: [updateImport]},
   });
   return output.outputText;
 }
