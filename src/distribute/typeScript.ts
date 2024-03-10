@@ -1,8 +1,9 @@
 import fs from "node:fs";
 import {basename, dirname, join} from "node:path";
-import {type CompilerOptions, ModuleKind, transpile} from "typescript";
+import {type CompilerOptions, ModuleKind, transpileModule, type TranspileOutput} from "typescript";
 
 import {type Operation, read} from "./package.ts";
+import {updateImport} from "./updateImport.ts";
 
 export function typeScript(entryFile: string): Operation {
   return (output: string): void => {
@@ -31,4 +32,12 @@ function writeFile(path: string, content: string): void {
 
 function createDirectory(output: string): void {
   fs.mkdirSync(output, {recursive: true});
+}
+
+function transpile(sourceCode: string, options: CompilerOptions): string {
+  const output: TranspileOutput = transpileModule(sourceCode, {
+    compilerOptions: options,
+    transformers: {after: [updateImport]},
+  });
+  return output.outputText;
 }
