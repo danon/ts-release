@@ -15,6 +15,10 @@ suite('fixture/', () => {
       assert(called);
     });
 
+    test('callback return', () => {
+      assert.equal(directory(() => 'foo'), 'foo');
+    });
+
     test('path', () =>
       directory(dir => assert(dir.path.startsWith(expectedTmp()))));
 
