@@ -2,6 +2,8 @@ import {suite, test} from "mocha";
 import {strict as assert} from "node:assert";
 
 import {assertTranspile, assertTranspileTarget} from "./fixture/assert.ts";
+import {directory} from "./fixture/directory.ts";
+import {distScript} from "./fixture/dist.ts";
 import {executeTypeScript} from "./fixture/execute.ts";
 
 suite('distribute()', () => {
@@ -51,6 +53,35 @@ require("./file.js");`));
           console.log(path.join('foo'));
         `);
         assert.equal(output, 'foo\n');
+      }
+    });
+
+    suite('include imported "./file.ts"', () => {
+      test('esModule', () =>
+        assertImportedFile(
+          'esm',
+          'export const val = 5;',
+          `export var val = 5;\n`));
+
+      test('commonJs', () =>
+        assertImportedFile(
+          'cjs',
+          'export const val = 5;',
+          `"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.val = void 0;
+exports.val = 5;
+`));
+
+      function assertImportedFile(target: 'cjs'|'esm', sourceCode: string, alsoIncluded: string): void {
+        directory(tmp => {
+          tmp.write('other.ts', sourceCode);
+          distScript(tmp, 'file.ts', `
+            import {val} from "./other.ts";
+            console.log(val);
+          `);
+          assert.equal(tmp.read(`dist/${target}/other.js`), alsoIncluded);
+        });
       }
     });
   });
