@@ -16,6 +16,11 @@ require("node:fs");`));
     test('esModule',
       assertTranspileTarget('esm', 'import "node:fs";', 'import "node:fs";'));
 
+    test('emit declaration',
+      assertTranspileTarget('types',
+        'export interface Foo {}\nsideEffect();',
+        'export interface Foo {\n}'));
+
     suite('import ".ts" to ".js"', () => {
       test('update extension',
         assertTranspile('import "./file.ts";', 'import "./file.js";'));
