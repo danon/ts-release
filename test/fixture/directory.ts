@@ -2,17 +2,17 @@ import fs from "node:fs";
 import os from "node:os";
 import {dirname, join} from "node:path";
 
-export function directory(callback: (directory: Directory) => void): void {
-  callTemporaryDirectory(
+export function directory<T>(callback: (directory: Directory) => T): T {
+  return callTemporaryDirectory(
     join(os.tmpdir(), 'tUnit.'),
     callback,
   );
 }
 
-function callTemporaryDirectory(root: string, callback: (directory: Directory) => void): void {
+function callTemporaryDirectory<T>(root: string, callback: (directory: Directory) => T): T {
   const path: string = fs.mkdtempSync(root);
   try {
-    callback(new Directory(path));
+    return callback(new Directory(path));
   } finally {
     fs.rmSync(path, {recursive: true});
   }

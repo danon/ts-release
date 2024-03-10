@@ -1,6 +1,8 @@
 import {suite, test} from "mocha";
+import {strict as assert} from "node:assert";
 
 import {assertTranspile, assertTranspileTarget} from "./fixture/assert.ts";
+import {executeTypeScript} from "./fixture/execute.ts";
 
 suite('distribute()', () => {
   suite('typeScript()', () => {
@@ -34,6 +36,22 @@ require("node:fs");`));
           `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 require("./file.js");`));
+    });
+
+    suite('import default from commonJs', () => {
+      test('commonJs', () =>
+        assertInterop('cjs'));
+
+      test('esModule', () =>
+        assertInterop('esm'));
+
+      function assertInterop(target: 'cjs'|'esm'): void {
+        const output: string = executeTypeScript(target, `
+          import path from "node:path";
+          console.log(path.join('foo'));
+        `);
+        assert.equal(output, 'foo\n');
+      }
     });
   });
 });
