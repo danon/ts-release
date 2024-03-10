@@ -51,6 +51,6 @@ function readJson(packageJson: string): { [key: string]: string } {
   return {};
 }
 
-export function read(path: string): string {
+function read(path: string): string {
   return fs.readFileSync(path).toString();
 }
