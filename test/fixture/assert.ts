@@ -21,7 +21,11 @@ export function assertOutputFilename(input: string, expected: string): Test {
   });
 }
 
-export function assertTranspile(target: 'cjs'|'esm', sourceCode: string, expected: string): Test {
+export function assertTranspile(sourceCode: string, expected: string): Test {
+  return assertTranspileTarget('esm', sourceCode, expected);
+}
+
+export function assertTranspileTarget(target: 'cjs'|'esm', sourceCode: string, expected: string): Test {
   return assertTranspileNewline(target, sourceCode, expected + '\n');
 }
 
