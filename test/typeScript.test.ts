@@ -20,6 +20,13 @@ require("node:fs");`));
         assertTranspileTarget('types',
           'export interface Foo {}\nsideEffect();',
           'export interface Foo {\n}'));
+
+      test('declaration without source', () =>
+        directory(dir => {
+          dir.write('foo.ts', '');
+          distribute(dir.path, [typeScript(dir.join('foo.ts'))]);
+          assert(!dir.exists('dist/types/foo.js'));
+        }));
     });
 
     test('.ts.ts',
@@ -27,10 +34,8 @@ require("node:fs");`));
 
     test('set package.json {main, module}', () =>
       directory(dir => {
-        dir.write('input/foo.ts', '');
-        distribute(dir.path, [
-          typeScript(dir.join('input/foo.ts')),
-        ]);
+        dir.write('foo.ts', '');
+        distribute(dir.path, [typeScript(dir.join('foo.ts'))]);
         assert.deepEqual(dir.readJson('package.json'), {
           main: './dist/cjs/foo.js',
           module: './dist/esm/foo.js',

@@ -47,6 +47,7 @@ function transpileDeclaration(fileName: string, output: string): void {
   const program: Program = createProgram([fileName], {
     outDir: output,
     declaration: true,
+    emitDeclarationOnly: true,
     types: [],
     lib: [],
   });
