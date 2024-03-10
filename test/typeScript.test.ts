@@ -32,13 +32,14 @@ require("node:fs");`));
     test('.ts.ts',
       assertOutputFilename('foo.ts.ts', 'foo.ts.js'));
 
-    test('set package.json {main, module}', () =>
+    test('set package.json {main, module, types}', () =>
       directory(dir => {
         dir.write('foo.ts', '');
         distribute(dir.path, [typeScript(dir.join('foo.ts'))]);
         assert.deepEqual(dir.readJson('package.json'), {
           main: './dist/cjs/foo.js',
           module: './dist/esm/foo.js',
+          types: './dist/types/foo.d.ts',
         });
       }));
 
@@ -64,6 +65,39 @@ require("node:fs");`));
           `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 require("./file.js");`));
+    });
+
+    suite('imported file', () => {
+      const file: string = 'export const x = 5;';
+      const index: string = `
+        import {x} from "./file.ts";
+        console.log(x);
+      `;
+
+      test('commonJs', () =>
+        assertImportedFile('cjs', `"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.x = void 0;
+exports.x = 5;
+`));
+
+      test('esModule', () =>
+        assertImportedFile('esm', `export var x = 5;\n`));
+
+      test('declaration', () =>
+        assertImportedFile('types', 'export declare const x = 5;\n'));
+
+      function assertImportedFile(target: 'cjs'|'esm'|'types', expected: string): void {
+        directory(dir => {
+          dir.write('file.ts', file);
+          dir.write('index.ts', index);
+          distribute(dir.path, [typeScript(dir.join('index.ts'))]);
+          assert.equal(
+            dir.read(`dist/${target}/file.` + (target === 'types' ? 'd.ts' : 'js')),
+            expected,
+          );
+        });
+      }
     });
   });
 });

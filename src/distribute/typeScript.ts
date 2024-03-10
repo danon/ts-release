@@ -1,55 +1,42 @@
-import fs from "node:fs";
-import {basename, dirname, join} from "node:path";
-import {type CompilerOptions, createProgram, ModuleKind, type Program, transpileModule, type TranspileOutput} from "typescript";
+import {basename, join} from "node:path";
+import {type CompilerOptions, createProgram, ModuleKind, type Program} from "typescript";
 
-import {type Operation, packageJson, read} from "./package.ts";
+import {type Operation, packageJson} from "./package.ts";
 import {updateImport} from "./updateImport.ts";
 
 export function typeScript(entryFile: string): Operation {
   return (output: string): void => {
-    const filename = basename(entryFile);
-    writeFile(
-      join(output, 'dist', 'cjs', js(filename, 'js')),
-      transpile(read(entryFile), {}));
-    writeFile(
-      join(output, 'dist', 'esm', js(filename, 'js')),
-      transpile(read(entryFile), {module: ModuleKind.ES2015}));
-    transpileDeclaration(entryFile, join(output, 'dist', 'types'));
+    buildTypeScript(entryFile, join(output, 'dist'));
     packageJson({
-      main: './dist/cjs/' + js(filename, 'js'),
-      module: './dist/esm/' + js(filename, 'js'),
+      main: './dist/cjs/' + ext(basename(entryFile), 'js'),
+      module: './dist/esm/' + ext(basename(entryFile), 'js'),
+      types: './dist/types/' + ext(basename(entryFile), 'd.ts'),
     })(output);
   };
 }
 
-function transpile(sourceCode: string, compilerOptions: CompilerOptions): string {
-  const output: TranspileOutput = transpileModule(sourceCode, {
-    compilerOptions: {...compilerOptions, esModuleInterop: true},
-    transformers: {before: [updateImport]},
-  });
-  return output.outputText;
-}
-
-function js(file: string, ext: string): string {
+function ext(file: string, ext: string): string {
   return file.replace(/\.ts$/, '.' + ext);
 }
 
-function writeFile(path: string, content: string): void {
-  createDirectory(dirname(path));
-  fs.writeFileSync(path, content);
+function buildTypeScript(entryFile: string, output: string): void {
+  transpileDeclaration(entryFile, join(output, 'cjs'), {esModuleInterop: true});
+  transpileDeclaration(entryFile, join(output, 'esm'), {module: ModuleKind.ES2015});
+  transpileDeclaration(entryFile, join(output, 'types'), {declaration: true, emitDeclarationOnly: true});
 }
 
-function createDirectory(output: string): void {
-  fs.mkdirSync(output, {recursive: true});
-}
-
-function transpileDeclaration(fileName: string, output: string): void {
-  const program: Program = createProgram([fileName], {
+function transpileDeclaration(entryFile: string, output: string, options: CompilerOptions): void {
+  const program: Program = createProgram([entryFile], {
     outDir: output,
-    declaration: true,
-    emitDeclarationOnly: true,
     types: [],
     lib: [],
+    ...options,
   });
-  program.emit();
+  program.emit(
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    {before: [updateImport]},
+  );
 }
