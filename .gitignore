@@ -5,3 +5,6 @@
 # Node
 yarn.lock
 node_modules/
+
+# Release
+package/
