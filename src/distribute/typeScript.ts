@@ -1,13 +1,26 @@
-import {join} from "node:path";
+import {basename, join} from "node:path";
 import {type CompilerOptions, createProgram, ModuleKind, type Program} from "typescript";
 
-import {type Operation} from "./package.ts";
+import {type Operation, packageJson} from "./package.ts";
 import {updateImport} from "./updateImport.ts";
 
 export function typeScript(entryFile: string): Operation {
   return (output: string): void => {
     buildTypeScript(entryFile, output);
+    setPackageJsonEntry(basename(entryFile), output);
   };
+}
+
+function setPackageJsonEntry(filename: string, output: string): void {
+  packageJson({
+    main: './dist/cjs/' + ext(filename, 'js'),
+    module: './dist/esm/' + ext(filename, 'js'),
+    types: './dist/types/' + ext(filename, 'd.ts'),
+  })(output);
+}
+
+function ext(filename: string, ext: string): string {
+  return filename.replace(/\.ts$/, '.' + ext);
 }
 
 function buildTypeScript(entryFile: string, output: string): void {

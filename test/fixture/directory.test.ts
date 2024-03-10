@@ -150,6 +150,12 @@ suite('fixture/', () => {
           {key: "value"});
       }));
 
+    test('.readJsonKey()', () =>
+      directory(dir => {
+        dir.write('foo', '{"key":"value"}');
+        assert.equal(dir.readJsonField('foo', 'key'), 'value');
+      }));
+
     test('.children()', () =>
       directory(dir => {
         dir.write('input/foo', '');
